@@ -1,0 +1,5 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Weihnachten-Finder Stern">
+  <rect width="64" height="64" rx="22" fill="#123f35"/>
+  <path d="M32 10L37 26L53 32L37 38L32 54L27 38L11 32L27 26Z" fill="#f0c36b"/>
+  <circle cx="32" cy="32" r="5" fill="#dc5b43"/>
+</svg>
