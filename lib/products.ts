@@ -49,7 +49,7 @@ export const products = rawProducts as Product[];
 export const mainProducts = products.filter((product) => product.product_type === 'Hauptprodukt');
 
 const interestTerms: Record<string, string[]> = {
-  genuss: ['Küche', 'Beauty', 'Adventskalender'],
+  genuss: ['Küche & Genuss', 'Kochen', 'Rezept', 'Nüsse', 'Glühwein', 'Tee', 'Kaffee', 'Schokolade', 'Gewürz', 'Müsli'],
   technik: ['Elektronik', 'Beleuchtung', 'Smart Home'],
   gemuetlich: ['Wohnambiente', 'Mode', 'Beauty', 'Bücher'],
   aktiv: ['Sport', 'Freizeit', 'Spielzeug'],
@@ -59,6 +59,21 @@ const interestTerms: Record<string, string[]> = {
   deko: ['Weihnachtsdekoration', 'Baumschmuck', 'Beleuchtung'],
 };
 
+function containsWholeTerm(text: string, term: string) {
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(^|[^\\p{L}\\p{N}])${escaped}([^\\p{L}\\p{N}]|$)`, 'iu').test(text);
+}
+
+function matchesInterest(product: Product, interest: string) {
+  const terms = interestTerms[interest] ?? [];
+  if (!terms.length) return true;
+  const general = `${product.main_category} ${product.subcategory} ${product.editorial_title} ${product.target_group}`;
+  const searchable = interest === 'genuss'
+    ? `${product.subcategory} ${product.editorial_title} ${product.key_features} ${product.purchase_argument}`
+    : general;
+  return terms.some((term) => containsWholeTerm(searchable, term));
+}
+
 const recipientTerms: Record<string, string[]> = {
   partner: ['Erwachsene', 'Paare'],
   eltern: ['Erwachsene', 'Familien'],
@@ -67,6 +82,11 @@ const recipientTerms: Record<string, string[]> = {
   kollegen: ['Erwachsene'],
   haustier: ['Haustier'],
 };
+
+function matchesRecipient(product: Product, recipient: string) {
+  const terms = recipientTerms[recipient] ?? [];
+  return !terms.length || terms.some((term) => containsWholeTerm(product.target_group, term));
+}
 
 export function budgetCeiling(value: string) {
   return ({ klein: 20, mittel: 50, gross: 100, premium: 1000 } as Record<string, number>)[value] ?? 1000;
@@ -84,14 +104,12 @@ export function scoreProduct(product: Product, answers: FinderAnswers): ScoredPr
   let score = product.selection_score_0_100 * 0.28;
   const maxBudget = budgetCeiling(answers.budget);
 
-  const interests = interestTerms[answers.interest] ?? [];
-  if (!interests.length || interests.some((term) => haystack.includes(term.toLowerCase()))) {
+  if (matchesInterest(product, answers.interest)) {
     score += 25;
     reasons.push('passt zum gewünschten Interessenbereich');
   }
 
-  const recipients = recipientTerms[answers.recipient] ?? [];
-  if (!recipients.length || recipients.some((term) => haystack.includes(term.toLowerCase()))) {
+  if (matchesRecipient(product, answers.recipient)) {
     score += 12;
     reasons.push('ist für die ausgewählte Personengruppe plausibel');
   }
@@ -119,9 +137,11 @@ export function scoreProduct(product: Product, answers: FinderAnswers): ScoredPr
 
 export function getRecommendations(answers: FinderAnswers) {
   const ranked = mainProducts.map((product) => scoreProduct(product, answers)).sort((a, b) => b.matchScore - a.matchScore);
-  const best = ranked[0];
-  const budget = ranked.find((item) => item.product_id !== best.product_id && item.current_price < best.current_price) ?? ranked[1];
-  const special = ranked.find((item) => item.product_id !== best.product_id && item.product_id !== budget.product_id && item.main_category !== best.main_category) ?? ranked[2];
+  const preciseMatches = ranked.filter((product) => matchesInterest(product, answers.interest) && matchesRecipient(product, answers.recipient));
+  const candidates = preciseMatches.length >= 3 ? preciseMatches : ranked;
+  const best = candidates[0];
+  const budget = candidates.find((item) => item.product_id !== best.product_id && item.current_price < best.current_price) ?? candidates[1];
+  const special = candidates.find((item) => item.product_id !== best.product_id && item.product_id !== budget.product_id && item.main_category !== best.main_category) ?? candidates[2];
   return [best, budget, special];
 }
 
