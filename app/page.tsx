@@ -1,12 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ProductCard } from '@/components/product-card';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
-import { getRecommendations } from '@/lib/products';
+import { finderContent, type FinderKind } from '@/lib/finder-catalog';
 
 export default function Home() {
-  const sample = getRecommendations({ recipient: 'partner', interest: 'gemuetlich', budget: 'mittel', intention: 'emotional' });
   return (
     <main>
       <SiteHeader />
@@ -14,12 +12,12 @@ export default function Home() {
         <Image className="hero-image" src="/images/heroes/familie-baum.webp" alt="Eine Familie schmückt gemeinsam einen leuchtenden Weihnachtsbaum" fill priority sizes="100vw" />
         <div className="hero-shade" />
         <div className="hero-content">
-          <p className="eyebrow"><span /> Geschenk-Kompass für Weihnachten</p>
-          <h1 id="hero-title">Weniger suchen.<br/><em>Schöner schenken.</em></h1>
-          <p className="hero-copy">Ein paar ehrliche Fragen. Drei nachvollziehbare Empfehlungen. Und endlich das gute Gefühl, das Richtige gefunden zu haben.</p>
+          <p className="eyebrow"><span /> Vier Finder für ein entspanntes Fest</p>
+          <h1 id="hero-title">Weihnachten.<br/><em>Einfach gefunden.</em></h1>
+          <p className="hero-copy">Geschenke, Spielzeug, Christbaumständer und Lichterketten: Wähle deinen Finder und erhalte drei nachvollziehbare Amazon-Empfehlungen.</p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/finder">Geschenk-Finder starten <span aria-hidden="true">→</span></Link>
-            <a className="button button-quiet" href="#so-gehts">So funktioniert’s</a>
+            <a className="button button-primary" href="#finder-auswahl">Finder auswählen <span aria-hidden="true">→</span></a>
+            <a className="button button-quiet" href="#so-gehts">So funktioniert es</a>
           </div>
           <p className="hero-note"><span aria-hidden="true">✓</span> Kostenlos · ohne Anmeldung · in unter 1 Minute</p>
         </div>
@@ -35,24 +33,10 @@ export default function Home() {
         <p><strong>03</strong><span><b>Entscheidung erklären</b><small>Vorteile, Grenzen und Alternativen.</small></span></p>
       </section>
 
-      <section className="section intro-section">
-        <div className="section-kicker">Ein Finder, der zuhört</div>
-        <div className="split-heading"><h2>Nicht mehr Auswahl.<br/><em>Mehr Klarheit.</em></h2><p>Aus 250 kuratierten Geschenk- und Weihnachtsideen filtern wir die Vorschläge, die zu Person, Interessen und Budget passen. Ohne vermeintliche Tests, ohne künstlichen Zeitdruck.</p></div>
-        <div className="feature-grid">
-          <article><span>01</span><h3>Eine Frage nach der anderen</h3><p>Große Antwortflächen, verständliche Sprache und jederzeit zurück – ohne Datenverlust.</p></article>
-          <article><span>02</span><h3>Ein Score, den du verstehst</h3><p>Interessen, Zielgruppe, Budget und sichtbare Produktsignale ergeben deinen Match-Score.</p></article>
-          <article><span>03</span><h3>Drei echte Optionen</h3><p>Gesamttreffer, preisbewusste Wahl und Spezialalternative statt endloser Trefferlisten.</p></article>
-        </div>
-      </section>
-
-      <section className="section recommendation-preview">
-        <div className="section-heading"><div><p className="section-kicker">So kann dein Ergebnis aussehen</p><h2>Drei Wege zum <em>richtigen Geschenk.</em></h2></div><Link className="text-link" href="/finder">Meine Empfehlungen berechnen <span aria-hidden="true">→</span></Link></div>
-        <div className="product-grid">
-          <ProductCard product={sample[0]} label="Bester Gesamttreffer" />
-          <ProductCard product={sample[1]} label="Preisbewusste Alternative" />
-          <ProductCard product={sample[2]} label="Besondere Alternative" />
-        </div>
-        <p className="data-note">Beispiel auf Basis des Katalog-Datenstands 22.08.2026. Preise und Verfügbarkeit bitte bei Amazon prüfen.</p>
+      <section className="section finder-selection" id="finder-auswahl">
+        <div className="section-kicker">Was möchtest du finden?</div>
+        <div className="split-heading"><h2>Vier Wege.<br/><em>Drei klare Treffer.</em></h2><p>Jeder Finder stellt nur die Fragen, die für seine Produktwelt zählen. Danach erhältst du eine kleine, verständlich begründete Auswahl.</p></div>
+        <div className="finder-menu-grid">{(Object.keys(finderContent) as FinderKind[]).map((kind, index) => <Link href={`/finden/${kind}`} className={`finder-menu-card finder-menu-${kind}`} key={kind}><span>0{index + 1}</span><div><p>{finderContent[kind].eyebrow}</p><h3>{finderContent[kind].title}</h3><small>{finderContent[kind].intro}</small></div><b aria-hidden="true">→</b></Link>)}</div>
       </section>
 
       <section className="story-section">
