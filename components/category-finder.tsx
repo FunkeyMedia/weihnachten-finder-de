@@ -26,6 +26,7 @@ export function CategoryFinder({ kind, content, products, finderNav }: { kind: F
       <p className="section-kicker">{content.eyebrow}</p>
       <h1>{content.title}</h1>
       <p>{content.intro}</p>
+      <p className="catalog-count"><strong>{products.length}</strong> aktuelle Amazon-Artikel im Finder</p>
       <div className="category-switcher" aria-label="Finder auswählen">{finderNav.map((item) => <Link className={item.kind === kind ? 'active' : ''} href={`/finden/${item.kind}`} key={item.kind}>{item.label}</Link>)}</div>
     </section>
 
@@ -36,7 +37,7 @@ export function CategoryFinder({ kind, content, products, finderNav }: { kind: F
       <div className="category-options">{content.questions[step].options.map((option) => <button key={option.value} onClick={() => choose(option.value)}><span>{option.label}</span><i>→</i></button>)}</div>
       {step > 0 && <button className="question-back" onClick={() => setStep(step - 1)}>← Eine Frage zurück</button>}
     </section> : <section className="finder-results">
-      <div className="results-heading"><div><p className="section-kicker">{content.accent}</p><h2>Deine drei Empfehlungen</h2></div><button onClick={() => { setDone(false); setStep(0); setAnswers([]); }}>Neu starten</button></div>
+      <div className="results-heading"><div><p className="section-kicker">{content.accent}</p><h2>Deine drei Empfehlungen</h2><p>Aus {products.length} Amazon-Artikeln passend zu deinen Antworten ausgewählt.</p></div><button onClick={() => { setDone(false); setStep(0); setAnswers([]); }}>Neu starten</button></div>
       <div className="finder-result-grid">{results.map(({ product, score }, index) => <article className="finder-product" key={product.id}>
         <div className="finder-product-rank"><span>0{index + 1}</span><strong>{Math.min(score, 96)}% Match</strong></div>
         <div className="finder-product-media">{product.image ? <Image src={product.image} alt="" fill sizes="(max-width: 800px) 90vw, 33vw" /> : <span aria-hidden="true">⌁</span>}</div>

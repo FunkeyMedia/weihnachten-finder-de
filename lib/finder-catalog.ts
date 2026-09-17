@@ -1,5 +1,4 @@
-import rawProducts from '@/data/products.json';
-import { imageById } from '@/lib/product-visuals';
+import importedProducts from '@/data/finder-products.json';
 
 export type FinderKind = 'geschenk' | 'spielzeug' | 'christbaumstaender' | 'lichterkette';
 
@@ -18,56 +17,16 @@ export type FinderProduct = {
 
 export type FinderContent = { nav: string; eyebrow: string; title: string; intro: string; accent: string; questions: { title: string; options: { label: string; value: string }[] }[] };
 
-type RawProduct = {
-  product_id: string;
-  product_type: string;
-  editorial_title: string;
-  main_category: string;
-  short_description: string;
-  key_features: string;
-  advantages: string;
-  current_price: number;
-  star_rating: number | null;
-  amazon_affiliate_url: string;
-  target_group: string;
-  recommended_age: string;
-};
+const labels: Record<FinderKind, string> = { geschenk: 'Geschenke', spielzeug: 'Spielzeug', christbaumstaender: 'Christbaumständer', lichterkette: 'Lichterketten' };
+const imported = importedProducts as unknown as Record<FinderKind, Array<FinderProduct & { price: number | null; brand?: string }>>;
 
-const catalog = rawProducts as RawProduct[];
-const affiliateTag = 'onlinestarkei-21';
-
-function fromCatalog(ids: string[], tags: string[]): FinderProduct[] {
-  return ids.flatMap((id) => {
-    const item = catalog.find((product) => product.product_id === id && product.product_type === 'Hauptprodukt');
-    if (!item) return [];
-    return [{
-      id: item.product_id,
-      title: item.editorial_title,
-      category: item.main_category,
-      description: item.short_description,
-      features: [item.key_features, item.advantages],
-      price: item.current_price,
-      rating: item.star_rating,
-      image: imageById[item.product_id],
-      amazonUrl: item.amazon_affiliate_url,
-      tags: [...tags, item.target_group.toLowerCase(), item.recommended_age.toLowerCase(), item.current_price <= 20 ? 'klein' : item.current_price <= 50 ? 'mittel' : 'gross'],
-    }];
-  });
-}
-
-const treeStands: FinderProduct[] = [
-  { id: 'tree-s', title: 'KRINNER Green Line Comfort Grip S', category: 'Christbaumständer', description: 'Kompakter Einseil-Ständer für kleinere bis mittlere Bäume. Die sinnvolle Wahl für Wohnungen und Bäume bis etwa 2,2 Meter.', features: ['bis ca. 2,2 m Baumhöhe', 'bis 11 cm Stamm, 3,0 l Wassertank'], amazonUrl: `https://www.amazon.de/s?k=KRINNER+Green+Line+Comfort+Grip+S&tag=${affiliateTag}`, tags: ['klein', 'mittel', 'wohnung', 'einfach'] },
-  { id: 'tree-m', title: 'KRINNER Green Line Comfort Grip M', category: 'Christbaumständer', description: 'Der ausgewogene Allrounder für typische Wohnzimmerbäume mit Fußpedal, Einseiltechnik und Füllstandsanzeige.', features: ['bis ca. 2,5 m Baumhöhe', 'bis 12 cm Stamm, 3,5 l Wassertank'], amazonUrl: `https://www.amazon.de/s?k=KRINNER+Green+Line+Comfort+Grip+M+94129&tag=${affiliateTag}`, tags: ['mittel', 'gross', 'familie', 'einfach'] },
-  { id: 'tree-l', title: 'KRINNER Premium Ultra Grip L', category: 'Christbaumständer', description: 'Robuste Lösung für größere Weihnachtsbäume. Mehr Gewicht und Standfläche bringen zusätzliche Reserven.', features: ['bis ca. 2,7 m Baumhöhe', 'bis 12 cm Stamm, 3,7 l Wassertank'], amazonUrl: `https://www.amazon.de/s?k=KRINNER+Premium+Ultra+Grip+L&tag=${affiliateTag}`, tags: ['gross', 'premium', 'familie', 'stabil'] },
-  { id: 'tree-xl', title: 'KRINNER Premium Ultra Grip XL', category: 'Christbaumständer', description: 'Für besonders hohe und schwere Bäume mit größerem Wasserreservoir und breiterem Stand.', features: ['bis ca. 3,0 m Baumhöhe', 'bis 12 cm Stamm, 4,5 l Wassertank'], amazonUrl: `https://www.amazon.de/s?k=KRINNER+Premium+Ultra+Grip+XL&tag=${affiliateTag}`, tags: ['premium', 'sehr-gross', 'stabil'] },
-];
-
-export const finderProducts: Record<FinderKind, FinderProduct[]> = {
-  geschenk: fromCatalog(['P0001', 'P0084', 'P0126', 'P0155', 'P0171', 'P0199'], ['geschenk']),
-  spielzeug: fromCatalog(['P0083', 'P0108', 'P0126', 'P0155', 'P0198', 'P0199'], ['spielzeug']),
-  christbaumstaender: treeStands,
-  lichterkette: fromCatalog(['P0022', 'P0023', 'P0032', 'P0034', 'P0042', 'P0193'], ['lichterkette']),
-};
+export const finderProducts = Object.fromEntries((['geschenk', 'spielzeug', 'christbaumstaender', 'lichterkette'] as FinderKind[]).map((kind) => [kind, imported[kind].map((product) => ({
+  ...product,
+  category: labels[kind],
+  description: product.description || `${product.brand ?? 'Amazon'}: Produktdetails und Verfügbarkeit direkt bei Amazon prüfen.`,
+  price: product.price ?? undefined,
+  tags: [...product.tags, `${product.title} ${product.description} ${product.features.join(' ')}`.toLowerCase(), product.price == null ? 'premium' : product.price <= 20 ? 'klein' : product.price <= 50 ? 'mittel' : product.price <= 100 ? 'gross' : 'premium'],
+}))])) as Record<FinderKind, FinderProduct[]>;
 
 export const finderContent: Record<FinderKind, FinderContent> = {
   geschenk: { nav: 'Geschenk', eyebrow: 'Für Menschen, die dir wichtig sind', title: 'Geschenk-Finder', intro: 'Drei kurze Fragen führen zu passenden Weihnachtsideen statt zu einer endlosen Liste.', accent: 'Das passt wirklich', questions: [
