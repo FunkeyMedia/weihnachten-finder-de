@@ -336,3 +336,5 @@ h1 em { color:#f0c36b; font-weight:500; }
   .result-list{padding-inline:12px}.result-content{padding:24px 20px}.match-meter{right:18px}.result-content h2{font-size:29px}.compare-callout{padding:28px}.result-actions{align-items:stretch;flex-direction:column}.result-actions .button{width:100%}
   .detail-facts>div{grid-template-columns:1fr}.article-sections article{grid-template-columns:1fr;gap:10px}.article-sections article>span{font-size:20px}
 }
+
+.editorial-image-credit{position:absolute;bottom:16px;right:20px;z-index:3;color:#fff;background:#163f34;padding:6px 10px;font-size:11px;border-radius:6px}
