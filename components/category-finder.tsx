@@ -1,4 +1,5 @@
 'use client';
+import { LiveAmazonPrice } from "@/components/live-amazon-price";
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -41,7 +42,7 @@ export function CategoryFinder({ kind, content, products, finderNav }: { kind: F
       <div className="finder-result-grid">{results.map(({ product, score }, index) => <article className="finder-product" key={product.id}>
         <div className="finder-product-rank"><span>0{index + 1}</span><strong>{Math.min(score, 96)}% Match</strong></div>
         <div className="finder-product-media">{product.image ? <Image src={product.image} alt="" fill sizes="(max-width: 800px) 90vw, 33vw" /> : <span aria-hidden="true">⌁</span>}</div>
-        <div className="finder-product-copy"><p>{product.category}</p><h3>{product.title}</h3><span>{product.description}</span><ul>{product.features.slice(0, 2).map((feature) => <li key={feature}>{feature}</li>)}</ul><div className="finder-buy-row"><div>{product.price ? <><small>Preis bei Katalogprüfung</small><strong>{formatPrice(product.price)}</strong></> : <><small>Aktuellen Preis</small><strong>bei Amazon prüfen</strong></>}</div><a href={product.amazonUrl} target="_blank" rel="nofollow sponsored noopener">Bei Amazon ansehen <span>↗</span></a></div></div>
+        <div className="finder-product-copy"><p>{product.category}</p><h3>{product.title}</h3><span>{product.description}</span><ul>{product.features.slice(0, 2).map((feature) => <li key={feature}>{feature}</li>)}</ul><div className="finder-buy-row"><div>{<LiveAmazonPrice asin={product.id} />}</div><a href={product.amazonUrl} target="_blank" rel="nofollow sponsored noopener">Bei Amazon ansehen <span>↗</span></a></div></div>
       </article>)}</div>
       <p className="amazon-note">Als Amazon-Partner verdienen wir an qualifizierten Verkäufen. Preise und Verfügbarkeit können sich ändern. Bitte prüfe die Angaben direkt bei Amazon.</p>
     </section>}

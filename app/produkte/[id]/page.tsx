@@ -1,3 +1,4 @@
+import { LiveAmazonPrice } from "@/components/live-amazon-price";
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -43,13 +44,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             <div className="signal-row"><span><small>Auswahlscore</small><strong>{product.selection_score_0_100} / 100</strong></span><span><small>Sichtbare Bewertung</small><strong>{product.star_rating ? `${product.star_rating} / 5` : 'keine Angabe'}</strong></span><span><small>Budgetklasse</small><strong>{product.gift_budget}</strong></span></div>
             <div className="detail-reason"><strong>Warum wir es aufgenommen haben</strong><p>{product.purchase_argument}</p></div>
             <div className="detail-pros"><div><span aria-hidden="true">+</span><p><strong>Spricht dafür</strong>{product.advantages}</p></div><div><span aria-hidden="true">!</span><p><strong>Vor dem Kauf prüfen</strong>{product.limitations}</p></div></div>
-            <div className="purchase-panel"><div><small>Preis-Momentaufnahme vom {checkedDate(product)}</small><strong>{formatPrice(product.current_price)}</strong><span>Aktuellen Preis und Verfügbarkeit bei Amazon prüfen.</span></div><AffiliateButton href={product.amazon_affiliate_url} productId={product.product_id} /></div>
+            <div className="purchase-panel"><div><small>Aktueller Amazon-Preis</small><strong>{<LiveAmazonPrice asin={product.asin} />}</strong><span>Aktuellen Preis und Verfügbarkeit bei Amazon prüfen.</span></div><AffiliateButton href={product.amazon_affiliate_url} productId={product.product_id} /></div>
             <p className="affiliate-inline">Affiliate-Link: Bei einem qualifizierten Kauf erhalten wir möglicherweise eine Provision. Für dich ändert sich der Preis dadurch nicht.</p>
           </div>
         </div>
       </section>
       <section className="detail-facts"><h2>Für deine Entscheidung</h2><div><article><strong>Anlass</strong><p>{product.gift_occasion}</p></article><article><strong>Zielgruppe</strong><p>{product.target_group}</p></article><article><strong>Alter</strong><p>{product.recommended_age}</p></article><article><strong>Datenstand</strong><p>{checkedDate(product)}</p></article></div></section>
-      <section className="related-section"><div className="section-heading"><div><p className="section-kicker">Ähnliche Ideen</p><h2>Weitere Produkte aus <em>{product.main_category}</em></h2></div><Link href="/finder" className="text-link">Neu berechnen →</Link></div><div className="related-grid">{related.map((item) => <Link href={`/produkte/${item.product_id.toLowerCase()}`} key={item.product_id}><ProductVisual product={item}/><p>{item.editorial_title}</p><strong>{formatPrice(item.current_price)}</strong></Link>)}</div></section>
+      <section className="related-section"><div className="section-heading"><div><p className="section-kicker">Ähnliche Ideen</p><h2>Weitere Produkte aus <em>{product.main_category}</em></h2></div><Link href="/finder" className="text-link">Neu berechnen →</Link></div><div className="related-grid">{related.map((item) => <Link href={`/produkte/${item.product_id.toLowerCase()}`} key={item.product_id}><ProductVisual product={item}/><p>{item.editorial_title}</p><strong>{<LiveAmazonPrice asin={item.asin} />}</strong></Link>)}</div></section>
       <SiteFooter />
     </main>
   );

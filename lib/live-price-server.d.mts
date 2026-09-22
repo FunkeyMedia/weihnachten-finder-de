@@ -1,0 +1,1 @@
+export function createPriceService(options: {allowed: string[]; gatewayUrl?: string; secret?: string}): (ids:string[]) => Promise<{items:Array<{asin:string;amount:number;currency:string;displayAmount:string;updatedAt:string;expiresAt:number}>;missing:string[]}>;

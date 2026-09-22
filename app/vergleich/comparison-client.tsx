@@ -1,4 +1,5 @@
 'use client';
+import { LiveAmazonPrice } from "@/components/live-amazon-price";
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -7,11 +8,10 @@ import { ProductVisual } from '@/components/product-visual';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import type { Product } from '@/lib/products';
-import { formatPrice } from '@/lib/format';
 
 const defaults = ['P0001', 'P0031', 'P0091'];
 
-type CompareProduct = Pick<Product, 'product_id' | 'editorial_title' | 'main_category' | 'current_price' | 'selection_score_0_100' | 'star_rating' | 'review_count' | 'target_group' | 'advantages' | 'limitations' | 'checked_at' | 'amazon_affiliate_url'>;
+type CompareProduct = Pick<Product, 'asin' | 'product_id' | 'editorial_title' | 'main_category' | 'current_price' | 'selection_score_0_100' | 'star_rating' | 'review_count' | 'target_group' | 'advantages' | 'limitations' | 'checked_at' | 'amazon_affiliate_url'>;
 
 export function ComparisonClient({ catalog }: { catalog: CompareProduct[] }) {
   const [selectedIds, setSelectedIds] = useState(defaults);
@@ -19,7 +19,6 @@ export function ComparisonClient({ catalog }: { catalog: CompareProduct[] }) {
   const selected = selectedIds.map((id) => catalog.find((product) => product.product_id === id)).filter(Boolean) as CompareProduct[];
   const addProduct = (id: string) => { if (!selectedIds.includes(id) && selectedIds.length < 4) setSelectedIds([...selectedIds, id]); };
   const remove = (id: string) => { if (selectedIds.length > 2) setSelectedIds(selectedIds.filter((item) => item !== id)); };
-  const bestPrice = Math.min(...selected.map((product) => product.current_price));
   const bestScore = Math.max(...selected.map((product) => product.selection_score_0_100));
 
   return (
@@ -34,7 +33,7 @@ export function ComparisonClient({ catalog }: { catalog: CompareProduct[] }) {
               <button className="remove-compare" onClick={() => remove(product.product_id)} disabled={selected.length <= 2} aria-label={`${product.editorial_title} aus Vergleich entfernen`}>×</button>
               <ProductVisual product={product} />
               <p className="card-category">{product.main_category}</p><h2>{product.editorial_title}</h2>
-              <div className="comparison-value"><span>Budgetorientierung</span><strong>{formatPrice(product.current_price)}</strong>{product.current_price === bestPrice && <em>niedrigster Preis</em>}</div>
+              <div className="comparison-value"><span>Aktueller Amazon-Preis</span><strong>{<LiveAmazonPrice asin={product.asin} />}</strong></div>
               <div className="comparison-value"><span>Auswahlscore</span><strong>{product.selection_score_0_100} / 100</strong>{product.selection_score_0_100 === bestScore && <em>stärkstes Basissignal</em>}</div>
               <div className="comparison-value"><span>Sichtbare Bewertung</span><strong>{product.star_rating ? `${product.star_rating} / 5` : 'Keine Angabe'}</strong><small>{product.review_count ? `${product.review_count.toLocaleString('de-DE')} Rezensionen` : 'Auf Übersichtsseite nicht eindeutig sichtbar'}</small></div>
               <div className="comparison-value"><span>Geeignet für</span><p>{product.target_group}</p></div>

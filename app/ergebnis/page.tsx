@@ -1,3 +1,4 @@
+import { LiveAmazonPrice } from "@/components/live-amazon-price";
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AffiliateButton } from '@/components/affiliate-button';
@@ -41,7 +42,7 @@ export default async function ResultPage({ searchParams }: { searchParams: Promi
               <p className="result-why">{product.purchase_argument}</p>
               <div className="reason-list"><strong>Warum es passt</strong>{product.reasons.map((reason) => <p key={reason}><span aria-hidden="true">✓</span>{reason}</p>)}</div>
               <div className="pros-cons"><div><strong>Pluspunkt</strong><p>{product.advantages}</p></div><div><strong>Beachte</strong><p>{product.limitations}</p></div></div>
-              <div className="result-actions"><div><small>Preis-Momentaufnahme vom {checkedDate(product)}</small><strong>{formatPrice(product.current_price)}</strong></div><AffiliateButton href={product.amazon_affiliate_url} productId={product.product_id} /><Link className="text-link" href={`/produkte/${product.product_id.toLowerCase()}`}>Alle Details →</Link></div>
+              <div className="result-actions"><div><small>Aktueller Amazon-Preis</small><strong>{<LiveAmazonPrice asin={product.asin} />}</strong></div><AffiliateButton href={product.amazon_affiliate_url} productId={product.product_id} /><Link className="text-link" href={`/produkte/${product.product_id.toLowerCase()}`}>Alle Details →</Link></div>
             </div>
           </article>
         ))}

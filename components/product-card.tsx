@@ -1,3 +1,4 @@
+import { LiveAmazonPrice } from "@/components/live-amazon-price";
 import Link from 'next/link';
 import { ProductVisual } from '@/components/product-visual';
 import { formatPrice, type ScoredProduct } from '@/lib/products';
@@ -11,7 +12,7 @@ export function ProductCard({ product, label }: { product: ScoredProduct; label:
         <p className="card-category">{product.main_category}</p>
         <h3>{product.editorial_title}</h3>
         <p>{product.reasons[0] ?? product.purchase_argument}</p>
-        <div className="card-price"><span>Budgetorientierung</span><strong>{formatPrice(product.current_price)}</strong></div>
+        <div className="card-price"><span>Aktueller Amazon-Preis</span><strong>{<LiveAmazonPrice asin={product.asin} />}</strong></div>
         <Link className="text-link" href={`/produkte/${product.product_id.toLowerCase()}`}>Warum es passt <span aria-hidden="true">→</span></Link>
       </div>
     </article>
