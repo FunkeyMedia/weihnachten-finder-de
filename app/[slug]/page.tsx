@@ -49,7 +49,7 @@ const pages: Record<string, ContentPage> = {
 };
 
 export function generateStaticParams() { return Object.keys(pages).map((slug) => ({ slug })); }
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params; const page = pages[slug]; return page ? { title: `${page.title} | Weihnachten-Finder`, description: page.intro, alternates: { canonical: `/${slug}` } } : {}; }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params; const page = pages[slug]; return page ? { title: `${page.title} | Weihnachten-Finder`, description: page.intro, alternates: { canonical: `/${slug}` }, ...(['impressum', 'datenschutz'].includes(slug) ? { robots: { index: false, follow: true } } : {}) } : {}; }
 
 export default async function ContentPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params; const page = pages[slug]; if (!page) notFound();
