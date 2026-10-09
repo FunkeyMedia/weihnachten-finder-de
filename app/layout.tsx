@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Manrope } from 'next/font/google';
 import './globals.css';
+import { Analytics } from '@vercel/analytics/next';
 
 const display = Cormorant_Garamond({ variable: '--font-display', subsets: ['latin'], weight: ['500', '600', '700'], display: 'swap' });
 const sans = Manrope({ variable: '--font-sans', subsets: ['latin'], display: 'swap' });
@@ -17,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="de"><body className={`${display.variable} ${sans.variable}`}>{children}</body></html>;
+  return <html lang="de"><body className={`${display.variable} ${sans.variable}`}>{children}<Analytics /></body></html>;
 }
